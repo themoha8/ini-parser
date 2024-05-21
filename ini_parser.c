@@ -9,10 +9,6 @@
  */
 #include "ini_parser.h"
 
-enum {
-	NULL = 0
-};
-
 /* Stop parsing on first error (default is to keep parsing). */
 #ifndef INI_STOP_ON_FIRST_ERROR
 #define INI_STOP_ON_FIRST_ERROR 0
@@ -35,6 +31,10 @@ enum {
 #ifndef INI_ALLOW_MULTILINE
 #define INI_ALLOW_MULTILINE 1
 #endif
+
+enum {
+	NULL = 0
+};
 
 /* Locate character in string */
 static char *ini_strchr(const char *s, char c)
@@ -151,17 +151,26 @@ int ini_parse_stream(ini_reader reader, ini_handler handler, void *userdata,
 #endif
 			/* Non-blank line with leading whitespace, treat as continuation
 			 * of previous name's value (as per Python configparser).
-			 */
-			if (!HANDLER(userdata, section, prev_name, start))
+			 *
+			 * !error needed to return the first line where a error
+		     * occured, not the last
+		     */
+			if (!HANDLER(userdata, section, prev_name, start) && !error)
 				error = lineno;
 		}
 #endif
 		else if (*start == '[') {
+			/* If there is an error in a section, indicate 
+			 * the line number correctly
+			 */
+			lineno--;
 			/* A "[section]" line */
+			start = ini_skip_wschars_from_start(start+1);
 			end = ini_strchr(start+1, ']');
 			if (*end == ']') {
 				*end = '\0';
-				ini_strncpy(section, start + 1, sizeof(section));
+				end = ini_strip_wschars_from_end(start);
+				ini_strncpy(section, start, sizeof(section));
 				*prev_name = '\0';
 			}
 			else if (!error)
@@ -187,7 +196,9 @@ int ini_parse_stream(ini_reader reader, ini_handler handler, void *userdata,
 
 				/* Valid name[=:]value pair found, call handler */
 				ini_strncpy(prev_name, name, sizeof(prev_name));
-				if (!HANDLER(userdata, section, name, value))
+				/* !error needed to return the first line where a error
+				 * occured, not the last */
+				if (!HANDLER(userdata, section, name, value) && !error)
 					error = lineno;
 			}
 			else

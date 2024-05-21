@@ -12,7 +12,7 @@ enum {
 enum {
 	INI_MAX_LINE = 128,
 	INI_MAX_SECTION = 64,
-	INI_MAX_NAME = 16
+	INI_MAX_NAME = 128
 };
 
 /* Nonzero if ini_handler callback should accept lineno parameter. */
