@@ -36,6 +36,12 @@ enum {
 	NULL = 0
 };
 
+/* Used by ini_parse_string() to keep track of string parsing state. */
+struct buffer_t {
+	const char *ptr;
+	int num_left;
+};
+
 /* Locate character in string */
 static char *ini_strchr(const char *s, char c)
 {
@@ -212,4 +218,42 @@ int ini_parse_stream(ini_reader reader, ini_handler handler, void *userdata,
 #endif
 	}
 	return error;
+}
+
+/* An ini_reader function to read the next line from a string buffer. This
+ * is the fgets() equivalent used by ini_parse_string().
+ */
+static char *ini_reader_string(char *str, int num, void *stream)
+{
+	struct buffer_t *buf = (struct buffer_t *)stream;
+	const char *ptr = buf->ptr;
+	int num_left = buf->num_left;
+	char c;
+
+	if (num_left == 0 || num < 2) /* num == 1 ('\0') */
+		return (char*)NULL;
+
+	while (num > 1 && num_left != 0) {
+		c = *ptr++;
+		num_left--;
+		*str++ = c;
+		if (c == '\n')
+			break;
+		num--;
+	}
+
+	*str = '\0';
+	buf->ptr = ptr;
+	buf->num_left = num_left;
+	return str;
+}
+
+int ini_parse_string(const char *string, ini_handler handler, void *userdata)
+{
+	struct buffer_t buf;
+
+	buf.ptr = string;
+	buf.num_left = ini_strlen(string);
+	return ini_parse_stream((ini_reader) ini_reader_string, handler, userdata,
+							&buf);
 }

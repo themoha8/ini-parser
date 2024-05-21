@@ -42,6 +42,12 @@ typedef char* (*ini_reader)(char *str, int num, void *stream);
 int ini_parse_stream(ini_reader reader, ini_handler handler, void* userdata,
 						void *stream);
 
+/* Same as ini_parse(), but takes a zero-terminated string with the INI data
+ * instead of a file. Useful for parsing INI data from a network socket or
+ * already in memory.
+ */
+int ini_parse_string(const char *string, ini_handler handler, void *userdata);
+
 char *ini_strncpy(char *dest, const char *src, int size);
 
 int ini_strlen(const char *s);

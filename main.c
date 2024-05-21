@@ -4,6 +4,10 @@
 #include "ini_parser.h"
 #include <limits.h>
 
+#ifndef USE_INI_PARSE_STRING
+#define USE_INI_PARSE_STRING 0
+#endif
+
 struct conf_t {
 	int version;
 	char *name;
@@ -11,6 +15,12 @@ struct conf_t {
 	char *email;
 	int s_email;
 };
+
+#if USE_INI_PARSE_STRING
+static const char *ini_str1 = "[protocol]\nversion = 6\n[ user ]\n"
+							  "   name = Bob\n Smith ; commenting\n"
+							  "email = bob@smith.com  	\n";
+#endif
 
 static int check_overflow(int a, int b)
 {
@@ -97,15 +107,21 @@ static int handler(void *userdata, const char *section, const char *name,
 	return 1;
 }
 
+#if USE_INI_PARSE_STRING
+int main(void)
+#else
 int main(int argc, char *argv[])
+#endif
 {
 	int lineno;
-	FILE *fd;
 	struct conf_t config;
 	config.version = 0;
 	config.name = NULL;
 	config.email = NULL;
 
+#if USE_INI_PARSE_STRING
+#else
+	FILE *fd;
 	if (argc < 2) {
 		fprintf(stderr, "ini_parser: usage: ini_parser filename\n");
 		return 1;
@@ -116,8 +132,13 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "ini_parser: can't open %s\n", argv[1]);
 		return 2;
 	}
+#endif
 
+#if USE_INI_PARSE_STRING
+	lineno = ini_parse_string(ini_str1, handler, &config);
+#else
 	lineno = ini_parse_stream((ini_reader)fgets, handler, &config, fd);
+#endif
 	if (lineno) {
 		fprintf(stderr, "ini_parser: error while parsing file on line %d\n", lineno);
 		//if (config.name)
@@ -128,14 +149,22 @@ int main(int argc, char *argv[])
 		//return lineno;
 	}
 
+#if USE_INI_PARSE_STRING
+	printf("Parsed string: version=%d, name=%s, email=%s\n",
+		   config.version, config.name, config.email);
+#else
 	printf("Config loaded from %s: version=%d, name=%s, email=%s\n", argv[1],
 		   config.version, config.name, config.email);
+#endif
 
 	if (config.name)
 		free(config.name);
 	if (config.email)
 		free(config.email);
+#if USE_INI_PARSE_STRING
+#else
 	fclose(fd);
+#endif
 
 	return 0;
 }
