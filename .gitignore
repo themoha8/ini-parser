@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 
 # Manually
-ini_parser
+example
 *.mk
 *.swp
 *.s

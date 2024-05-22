@@ -1,4 +1,4 @@
-PROGRAM_NAME = ini_parser
+PROGRAM_NAME = example
 OBJ_PATH = ./obj/
 SRCMODULES = ini_parser.c
 OBJMODULES = $(addprefix $(OBJ_PATH), $(SRCMODULES:.c=.o))
@@ -12,7 +12,7 @@ else
 	CFLAGS = -Wall -Werror -Wextra -g -O0
 endif
 
-$(PROGRAM_NAME): main.c $(OBJMODULES)
+$(PROGRAM_NAME): example.c $(OBJMODULES)
 	$(CC) $(CFLAGS) $^ -o $@
 
 $(OBJ_PATH)%.o: %.c %.h
