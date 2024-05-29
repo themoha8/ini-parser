@@ -1,0 +1,87 @@
+[section1]
+one=This is a test  ; name=value comment ; line 3
+two=1234 ; line 4
+[section 2]
+happy=4 ; line 8
+sad=null ; line 9
+[comment_test]
+test1=1;2;3 ; only this will be a comment ; line 15
+test2=2;3;4;this won't be a comment, needs whitespace before ';' ; line 16
+test;3=345 ; key should be "test;3" ; line 17
+test4=4#5#6 ; '#' only starts a comment at start of line ; line 18
+test7=; blank value, except if inline comments disabled ; line 21
+test8=; not a comment, needs whitespace before ';' ; line 22
+[colon_tests]
+Content-Type=text/html ; line 25
+foo=bar ; line 26
+adams=42 ; line 27
+funny1=with = equals ; line 28
+funny2=with : colons ; line 29
+funny3=two = equals ; line 30
+funny4=two : colons ; line 31
+
+normal.ini: line number with error = 0
+
+---------------------------------
+[section1]
+name1=value1 ; line 2
+
+bad_section.ini: line number with error = 3
+
+---------------------------------
+[section3   ; comment]
+name2=value2 ; line 2
+
+bad_section2.ini: line number with error = 0
+
+---------------------------------
+[section3;comment]
+name2=value2 ; line 2
+
+bad_section3.ini: line number with error = 0
+
+---------------------------------
+
+bad_comment.ini: line number with error = 1
+
+---------------------------------
+[section]
+a=b ; line 2
+user=parse_error ; line 3
+c=d ; line 4
+
+user_error.ini: line number with error = 3
+
+---------------------------------
+[section1]
+single1=abc ; line 2
+multi=this is a ; line 3
+multi=multi-line value
+ ; line 4
+single2=xyz ; line 5
+[section2]
+multi=a ; line 7
+multi=b
+ ; line 8
+multi=c
+ ; line 9
+[section3]
+single=ghi ; line 11
+multi=the quick ; line 12
+multi=brown fox
+ ; line 13
+name=bob smith  ; comment line 1 ; line 14
+foo=bar ;c1 ; line 16
+foo=Hi World ;c2
+ ; line 17
+
+multi_line.ini: line number with error = 0
+
+---------------------------------
+[section1]
+single1=abc ; line 2
+single2=xyz ; line 3
+single1=def ; line 5
+single2=qrs ; line 6
+
+duplicate_sections.ini: line number with error = 0

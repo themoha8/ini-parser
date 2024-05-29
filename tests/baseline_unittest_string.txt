@@ -1,0 +1,37 @@
+
+empty string: line number with error = 0
+
+---------------------------------
+[section]
+foo=bar
+bazz=buzz quxx
+
+basic: line number with error = 0
+
+---------------------------------
+[section]
+hello=world
+forty_two=42
+
+crlf: line number with error = 0
+
+---------------------------------
+[sec]
+foo=0123456789012
+bar=4321
+
+long line: line number with error = 3
+
+---------------------------------
+[sec]
+foo=0123456789012
+bix=1234
+
+long continued: line number with error = 0
+
+---------------------------------
+[s]
+a=1
+c=3
+
+error: line number with error = 3

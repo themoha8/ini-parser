@@ -108,9 +108,16 @@ char *ini_strncpy(char *dest, const char *src, int size)
 static char *ini_find_chars_or_comment(const char *s, const char *chars)
 {
 #if INI_ALLOW_INLINE_COMMENTS
+	int was_space = 0;
 	/* if chars == NULL then don't search in string, but search a comment. */
+	/* was_space needed to register comment, that must be after whitespace */
 	while (*s != '\0' && (!chars || !ini_strchr(chars, *s)) && 
-		   !(ini_strchr(INI_INLINE_COMMENT_PREFIXES, *s))) {
+		   !(was_space && ini_strchr(INI_INLINE_COMMENT_PREFIXES, *s))) {
+		if (*s == ' ' || *s == '\t' || *s == '\n' ||
+				  *s == '\v' || *s == '\f' || *s == '\r')
+			was_space = 1;
+		else
+			was_space = 0;
 		s++; 
 	}
 #else
@@ -166,13 +173,9 @@ int ini_parse_stream(ini_reader reader, ini_handler handler, void *userdata,
 		}
 #endif
 		else if (*start == '[') {
-			/* If there is an error in a section, indicate 
-			 * the line number correctly
-			 */
-			lineno--;
 			/* A "[section]" line */
 			start = ini_skip_wschars_from_start(start+1);
-			end = ini_strchr(start+1, ']');
+			end = ini_find_chars_or_comment(start, "]");
 			if (*end == ']') {
 				*end = '\0';
 				end = ini_strip_wschars_from_end(start);
@@ -203,11 +206,15 @@ int ini_parse_stream(ini_reader reader, ini_handler handler, void *userdata,
 				/* Valid name[=:]value pair found, call handler */
 				ini_strncpy(prev_name, name, sizeof(prev_name));
 				/* !error needed to return the first line where a error
-				 * occured, not the last */
+				 * occured, not the last
+				 */
 				if (!HANDLER(userdata, section, name, value) && !error)
 					error = lineno;
 			}
-			else
+			/* !error needed to return the first line where a error
+			 * occured, not the last 
+			 */
+			else if (!error)
 				/* No '=' or ':' found on name[=:]value line */
 				error = lineno;
 		}

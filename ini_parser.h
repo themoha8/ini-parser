@@ -1,19 +1,12 @@
 #ifndef INI_H_SENTRY
 #define INI_H_SENTRY
 
-/*
-enum {
-	INI_MAX_LINE = 128,
-	INI_MAX_SECTION = 64,
-	INI_MAX_NAME = 128
-};
-*/
+#ifndef INI_MAX_LINE
+#define	INI_MAX_LINE 128
+#endif
+#define	INI_MAX_SECTION 64
+#define	INI_MAX_NAME 128
 
-enum {
-	INI_MAX_LINE = 128,
-	INI_MAX_SECTION = 64,
-	INI_MAX_NAME = 128
-};
 
 /* Nonzero if ini_handler callback should accept lineno parameter. */
 #ifndef INI_HANDLER_LINENO
@@ -28,11 +21,11 @@ enum {
 
 /* Typedef for prototype of handler function. */
 #if INI_HANDLER_LINENO
-typedef int (*ini_handler)(void *user, const char *section,
+typedef int (*ini_handler)(void *userdata, const char *section,
 							const char *name, const char *value,
 							int lineno);
 #else
-typedef int (*ini_handler)(void *user, const char *section,
+typedef int (*ini_handler)(void *userdata, const char *section,
                            const char *name, const char *value);
 #endif
 

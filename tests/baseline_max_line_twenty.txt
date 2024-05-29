@@ -1,0 +1,85 @@
+[section1]
+one=This is a test ; line 5
+two=1234 ; line 8
+[section 2]
+happy=4 ; line 12
+sad=null ; line 13
+[comment_test]
+test1=1;2;3 ; line 19
+test2=2;3;4;this ; line 22
+test2=needs whitespace b ; line 24
+test;3=345 ; line 26
+test4=4#5#6 ; line 28
+test4=only starts a comm ; line 29
+test7=null ; line 38
+test8=; not a comm ; line 42
+[colon_tests]
+Content-Type=text/ ; line 47
+foo=bar ; line 49
+adams=42 ; line 50
+funny1=with = equ ; line 51
+funny2=with : col ; line 53
+funny3=two = equa ; line 55
+funny4=two : colo ; line 57
+
+normal.ini: line number with error = 2
+
+---------------------------------
+[section1]
+name1=value1 ; line 2
+
+bad_section.ini: line number with error = 3
+
+---------------------------------
+name2=value2 ; line 3
+
+bad_section2.ini: line number with error = 1
+
+---------------------------------
+[section3;comment]
+name2=value2 ; line 3
+
+bad_section3.ini: line number with error = 0
+
+---------------------------------
+
+bad_comment.ini: line number with error = 1
+
+---------------------------------
+[section]
+a=b ; line 2
+user=parse_error ; line 3
+c=d ; line 4
+
+user_error.ini: line number with error = 3
+
+---------------------------------
+[section1]
+single1=abc ; line 2
+multi=this is a ; line 3
+multi=multi-line ; line 4
+single2=xyz ; line 6
+[section2]
+multi=a ; line 8
+multi=b ; line 9
+multi=c ; line 10
+[section3]
+single=ghi ; line 12
+multi=the quick ; line 13
+multi=brown fox ; line 14
+name=bob smith ; line 15
+name=comment line 1 ; line 16
+name=comment line 2 ; line 18
+foo=bar ; line 19
+foo=Hi World ; line 20
+
+multi_line.ini: line number with error = 5
+
+---------------------------------
+[section1]
+single1=abc ; line 2
+single2=xyz ; line 3
+single1=def ; line 5
+single2=qrs ; line 6
+
+duplicate_sections.ini: line number with error = 0
